@@ -2,6 +2,8 @@ package scheduler
 
 import (
 	"context"
+	"k8s.io/client-go/dynamic"
+	"k8s.io/client-go/dynamic/dynamicinformer"
 
 	"golang.org/x/xerrors"
 	v1 "k8s.io/api/core/v1"
@@ -9,11 +11,11 @@ import (
 	restclient "k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/events"
 	"k8s.io/klog/v2"
-	v1beta2config "k8s.io/kube-scheduler/config/v1beta2"
+	v1beta3config "k8s.io/kube-scheduler/config/v1beta3"
 	"k8s.io/kubernetes/pkg/scheduler"
 	"k8s.io/kubernetes/pkg/scheduler/apis/config"
 	"k8s.io/kubernetes/pkg/scheduler/apis/config/scheme"
-	"k8s.io/kubernetes/pkg/scheduler/apis/config/v1beta2"
+	"k8s.io/kubernetes/pkg/scheduler/apis/config/v1beta3"
 	"k8s.io/kubernetes/pkg/scheduler/profile"
 
 	"github.com/kubernetes-sigs/kube-scheduler-simulator/scheduler/defaultconfig"
@@ -27,17 +29,17 @@ type Service struct {
 
 	clientset           clientset.Interface
 	restclientCfg       *restclient.Config
-	initialSchedulerCfg *v1beta2config.KubeSchedulerConfiguration
-	currentSchedulerCfg *v1beta2config.KubeSchedulerConfiguration
+	initialSchedulerCfg *v1beta3config.KubeSchedulerConfiguration
+	currentSchedulerCfg *v1beta3config.KubeSchedulerConfiguration
 }
 
 // NewSchedulerService starts scheduler and return *Service.
-func NewSchedulerService(client clientset.Interface, restclientCfg *restclient.Config, initialSchedulerCfg *v1beta2config.KubeSchedulerConfiguration) *Service {
+func NewSchedulerService(client clientset.Interface, restclientCfg *restclient.Config, initialSchedulerCfg *v1beta3config.KubeSchedulerConfiguration) *Service {
 	initCfg := initialSchedulerCfg.DeepCopy()
 	return &Service{clientset: client, restclientCfg: restclientCfg, initialSchedulerCfg: initCfg}
 }
 
-func (s *Service) RestartScheduler(cfg *v1beta2config.KubeSchedulerConfiguration) error {
+func (s *Service) RestartScheduler(cfg *v1beta3config.KubeSchedulerConfiguration) error {
 	s.ShutdownScheduler()
 
 	oldSchedulerCfg := s.currentSchedulerCfg
@@ -57,12 +59,17 @@ func (s *Service) ResetScheduler() error {
 }
 
 // StartScheduler starts scheduler.
-func (s *Service) StartScheduler(versionedcfg *v1beta2config.KubeSchedulerConfiguration) error {
+func (s *Service) StartScheduler(versionedcfg *v1beta3config.KubeSchedulerConfiguration) error {
 	clientSet := s.clientset
 	restConfig := s.restclientCfg
 	ctx, cancel := context.WithCancel(context.Background())
 
 	informerFactory := scheduler.NewInformerFactory(clientSet, 0)
+	var dynInformerFactory dynamicinformer.DynamicSharedInformerFactory = nil
+	if restConfig != nil {
+		dynClient := dynamic.NewForConfigOrDie(restConfig)
+		dynInformerFactory = dynamicinformer.NewFilteredDynamicSharedInformerFactory(dynClient, 0, v1.NamespaceAll, nil)
+	}
 	evtBroadcaster := events.NewBroadcaster(&events.EventSinkImpl{
 		Interface: clientSet.EventsV1(),
 	})
@@ -86,6 +93,7 @@ func (s *Service) StartScheduler(versionedcfg *v1beta2config.KubeSchedulerConfig
 	sched, err := scheduler.New(
 		clientSet,
 		informerFactory,
+		dynInformerFactory,
 		profile.NewRecorderFactory(evtBroadcaster),
 		ctx.Done(),
 		scheduler.WithKubeConfig(restConfig),
@@ -103,7 +111,13 @@ func (s *Service) StartScheduler(versionedcfg *v1beta2config.KubeSchedulerConfig
 	}
 
 	informerFactory.Start(ctx.Done())
+	if dynInformerFactory != nil {
+		dynInformerFactory.Start(ctx.Done())
+	}
 	informerFactory.WaitForCacheSync(ctx.Done())
+	if dynInformerFactory != nil {
+		dynInformerFactory.WaitForCacheSync(ctx.Done())
+	}
 
 	go sched.Run(ctx)
 
@@ -119,28 +133,28 @@ func (s *Service) ShutdownScheduler() {
 	}
 }
 
-func (s *Service) GetSchedulerConfig() *v1beta2config.KubeSchedulerConfiguration {
+func (s *Service) GetSchedulerConfig() *v1beta3config.KubeSchedulerConfiguration {
 	return s.currentSchedulerCfg
 }
 
 // convertConfigurationForSimulator convert KubeSchedulerConfiguration to apply scheduler on simulator
 // (1) It excludes non-allowed changes. Now, we accept only changes to Profiles.Plugins field.
 // (2) It replaces filter/score default-plugins with plugins for simulator.
-// (3) It convert KubeSchedulerConfiguration from v1beta2config.KubeSchedulerConfiguration to config.KubeSchedulerConfiguration.
-func convertConfigurationForSimulator(versioned *v1beta2config.KubeSchedulerConfiguration) (*config.KubeSchedulerConfiguration, error) {
+// (3) It convert KubeSchedulerConfiguration from v1beta3config.KubeSchedulerConfiguration to config.KubeSchedulerConfiguration.
+func convertConfigurationForSimulator(versioned *v1beta3config.KubeSchedulerConfiguration) (*config.KubeSchedulerConfiguration, error) {
 	if len(versioned.Profiles) == 0 {
 		defaultSchedulerName := v1.DefaultSchedulerName
-		versioned.Profiles = []v1beta2config.KubeSchedulerProfile{
+		versioned.Profiles = []v1beta3config.KubeSchedulerProfile{
 			{
 				SchedulerName: &defaultSchedulerName,
-				Plugins:       &v1beta2config.Plugins{},
+				Plugins:       &v1beta3config.Plugins{},
 			},
 		}
 	}
 
 	for i := range versioned.Profiles {
 		if versioned.Profiles[i].Plugins == nil {
-			versioned.Profiles[i].Plugins = &v1beta2config.Plugins{}
+			versioned.Profiles[i].Plugins = &v1beta3config.Plugins{}
 		}
 
 		plugins, err := plugin.ConvertForSimulator(versioned.Profiles[i].Plugins)
@@ -165,7 +179,7 @@ func convertConfigurationForSimulator(versioned *v1beta2config.KubeSchedulerConf
 	defaultCfg.Profiles = versioned.Profiles
 	versioned = defaultCfg
 
-	v1beta2.SetDefaults_KubeSchedulerConfiguration(versioned)
+	v1beta3.SetDefaults_KubeSchedulerConfiguration(versioned)
 	cfg := config.KubeSchedulerConfiguration{}
 	if err := scheme.Scheme.Convert(versioned, &cfg, nil); err != nil {
 		return nil, xerrors.Errorf("convert configuration: %w", err)
