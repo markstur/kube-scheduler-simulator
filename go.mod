@@ -48,7 +48,7 @@ require (
 	k8s.io/client-go v1.23.4
 	k8s.io/component-base v1.23.4
 	k8s.io/klog/v2 v2.30.0
-	k8s.io/kube-openapi v0.0.0-20211115234752-e816edb12b65
+	k8s.io/kube-openapi v0.0.0-20220124234850-424119656bbf
 	k8s.io/kube-scheduler v1.23.4
 	k8s.io/kubernetes v1.23.4
 )
