@@ -46,8 +46,6 @@ func TestService_ImportFromExistingCluster(t *testing.T) {
 				dummyOption := new(export.Option)
 				clusterExport.EXPECT().Export(gomock.Any(), gomock.Any()).Return(nil, xerrors.Errorf("failed to Import"))
 				simulatorExport.EXPECT().Import(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).Times(0)
-				// simulatorExport.EXPECT().IgnoreErr().Return(*dummyOption).Times(1)
-				// TODO: is this test even valid without that?
 				simulatorExport.EXPECT().IgnoreSchedulerConfiguration().Return(*dummyOption).Times(0)
 			},
 			wantErr: true,

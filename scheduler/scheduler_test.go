@@ -140,13 +140,7 @@ func Test_convertConfigurationForSimulator(t *testing.T) {
 				cfg := configGeneratedFromDefault()
 				profile2 := cfg.Profiles[0].DeepCopy()
 				profile2.SchedulerName = nondefaultschedulername
-				profile2.Plugins.Score.Enabled = nil // []config.Plugin{
-				// {Name: "NodeResourcesBalancedAllocationWrapped", Weight: 1},
-				// {Name: "InterPodAffinityWrapped", Weight: 1},
-				// {Name: "NodeAffinityWrapped", Weight: 1},
-				// {Name: "PodTopologySpreadWrapped", Weight: 2},
-				// {Name: "TaintTolerationWrapped", Weight: 1},
-				// }
+				profile2.Plugins.Score.Enabled = nil
 				cfg.Profiles = append(cfg.Profiles, *profile2)
 				return &cfg
 			}(),
@@ -259,8 +253,6 @@ func Test_convertConfigurationForSimulator(t *testing.T) {
 				},
 			},
 			want: func() *config.KubeSchedulerConfiguration {
-				// weight0 := int32(0)
-				// var weight0 int32 = 0
 				cfg := configGeneratedFromDefault()
 				cfg.Profiles[0].Plugins.Score.Disabled = []config.Plugin{
 					{
@@ -268,13 +260,7 @@ func Test_convertConfigurationForSimulator(t *testing.T) {
 						Weight: 0,
 					},
 				}
-				cfg.Profiles[0].Plugins.Score.Enabled = nil //  []config.Plugin{
-				// {Name: "NodeResourcesBalancedAllocationWrapped", Weight: 1},
-				// {Name: "InterPodAffinityWrapped", Weight: 1},
-				// {Name: "NodeAffinityWrapped", Weight: 1},
-				// {Name: "PodTopologySpreadWrapped", Weight: 2},
-				// {Name: "TaintTolerationWrapped", Weight: 1},
-				// }
+				cfg.Profiles[0].Plugins.Score.Enabled = nil
 				return &cfg
 			}(),
 		},
@@ -309,42 +295,16 @@ func Test_convertConfigurationForSimulator(t *testing.T) {
 
 func configGeneratedFromDefault() config.KubeSchedulerConfiguration {
 	var weight0 int32 = 0
-	// var weight1 int32 = 1
-	// var weight2 int32 = 2
 	versioned, _ := defaultconfig.DefaultSchedulerConfig()
 	cfg := versioned.DeepCopy()
-	cfg.Profiles[0].Plugins.Filter.Enabled = nil // []v1beta3config.Plugin{
-	// {Name: "NodeUnschedulableWrapped"},
-	// {Name: "NodeNameWrapped"},
-	// {Name: "TaintTolerationWrapped"},
-	// {Name: "NodeAffinityWrapped"},
-	// {Name: "NodePortsWrapped"},
-	// {Name: "NodeResourcesFitWrapped"},
-	// {Name: "VolumeRestrictionsWrapped"},
-	// {Name: "EBSLimitsWrapped"},
-	// {Name: "GCEPDLimitsWrapped"},
-	// {Name: "NodeVolumeLimitsWrapped"},
-	// {Name: "AzureDiskLimitsWrapped"},
-	// {Name: "VolumeBindingWrapped"},
-	// {Name: "VolumeZoneWrapped"},
-	// {Name: "PodTopologySpreadWrapped"},
-	// {Name: "InterPodAffinityWrapped"},
-	//}
+	cfg.Profiles[0].Plugins.Filter.Enabled = nil
 	cfg.Profiles[0].Plugins.Filter.Disabled = []v1beta3config.Plugin{
 		{
 			Name:   "*",
 			Weight: &weight0,
 		},
 	}
-	cfg.Profiles[0].Plugins.Score.Enabled = nil // []v1beta3config.Plugin{
-	// {Name: "NodeResourcesBalancedAllocationWrapped", Weight: &weight1},
-	// {Name: "ImageLocalityWrapped", Weight: &weight1},
-	// {Name: "InterPodAffinityWrapped", Weight: &weight1},
-	// {Name: "NodeResourcesFitWrapped", Weight: &weight1},
-	// {Name: "NodeAffinityWrapped", Weight: &weight1},
-	// {Name: "PodTopologySpreadWrapped", Weight: &weight2},
-	// {Name: "TaintTolerationWrapped", Weight: &weight1},
-	// }
+	cfg.Profiles[0].Plugins.Score.Enabled = nil
 	cfg.Profiles[0].Plugins.Score.Disabled = []v1beta3config.Plugin{
 		{
 			Name:   "*",
@@ -357,30 +317,6 @@ func configGeneratedFromDefault() config.KubeSchedulerConfiguration {
 	}
 
 	var newpc []v1beta3config.PluginConfig
-	// newpc = append(newpc, v1beta3config.PluginConfig{
-	// Name: "NodeResourcesBalancedAllocationWrapped",
-	// Args: pcMap["NodeResourcesBalancedAllocation"],
-	// })
-	// newpc = append(newpc, v1beta3config.PluginConfig{
-	// Name: "InterPodAffinityWrapped",
-	// Args: pcMap["InterPodAffinity"],
-	// })
-	// newpc = append(newpc, v1beta3config.PluginConfig{
-	// Name: "NodeResourcesFitWrapped",
-	// Args: pcMap["NodeResourcesFit"],
-	// })
-	// newpc = append(newpc, v1beta3config.PluginConfig{
-	// Name: "NodeAffinityWrapped",
-	// Args: pcMap["NodeAffinity"],
-	// })
-	// newpc = append(newpc, v1beta3config.PluginConfig{
-	// Name: "PodTopologySpreadWrapped",
-	// Args: pcMap["PodTopologySpread"],
-	// })
-	// newpc = append(newpc, v1beta3config.PluginConfig{
-	// Name: "VolumeBindingWrapped",
-	// Args: pcMap["VolumeBinding"],
-	// })
 
 	cfg.Profiles[0].PluginConfig = append(cfg.Profiles[0].PluginConfig, newpc...)
 
