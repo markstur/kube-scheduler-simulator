@@ -2,14 +2,14 @@ package config
 
 import (
 	"golang.org/x/xerrors"
-	"k8s.io/kube-scheduler/config/v1beta2"
+	"k8s.io/kube-scheduler/config/v1beta3"
 	"k8s.io/kubernetes/pkg/scheduler/framework/plugins"
 	"k8s.io/kubernetes/pkg/scheduler/framework/runtime"
 )
 
 // RegisteredFilterPlugins returns all registered plugins.
 // in-tree plugins and your original plugins listed in OutOfTreeFilterPlugins.
-func RegisteredFilterPlugins() ([]v1beta2.Plugin, error) {
+func RegisteredFilterPlugins() ([]v1beta3.Plugin, error) {
 	def, err := InTreeFilterPluginSet()
 	if err != nil {
 		return nil, xerrors.Errorf("get default filter plugins: %w", err)
@@ -18,24 +18,24 @@ func RegisteredFilterPlugins() ([]v1beta2.Plugin, error) {
 	return append(def.Enabled, OutOfTreeFilterPlugins()...), nil
 }
 
-func InTreeFilterPluginSet() (v1beta2.PluginSet, error) {
+func InTreeFilterPluginSet() (v1beta3.PluginSet, error) {
 	defaultConfig, err := DefaultSchedulerConfig()
 	if err != nil || len(defaultConfig.Profiles) != 1 {
 		// default Config should only have default-scheduler configuration.
-		return v1beta2.PluginSet{}, xerrors.Errorf("get default scheduler configuration: %w", err)
+		return v1beta3.PluginSet{}, xerrors.Errorf("get default scheduler configuration: %w", err)
 	}
 	return defaultConfig.Profiles[0].Plugins.Filter, nil
 }
 
-func OutOfTreeFilterPlugins() []v1beta2.Plugin {
-	return []v1beta2.Plugin{
+func OutOfTreeFilterPlugins() []v1beta3.Plugin {
+	return []v1beta3.Plugin{
 		// Note: add your filter plugins here.
 	}
 }
 
 // RegisteredScorePlugins returns all registered plugins.
 // in-tree plugins and your original plugins listed in OutOfTreeScorePlugins.
-func RegisteredScorePlugins() ([]v1beta2.Plugin, error) {
+func RegisteredScorePlugins() ([]v1beta3.Plugin, error) {
 	def, err := InTreeScorePluginSet()
 	if err != nil {
 		return nil, xerrors.Errorf("get default score plugins: %w", err)
@@ -44,17 +44,17 @@ func RegisteredScorePlugins() ([]v1beta2.Plugin, error) {
 	return append(def.Enabled, OutOfTreeScorePlugins()...), nil
 }
 
-func InTreeScorePluginSet() (v1beta2.PluginSet, error) {
+func InTreeScorePluginSet() (v1beta3.PluginSet, error) {
 	defaultConfig, err := DefaultSchedulerConfig()
 	if err != nil || len(defaultConfig.Profiles) != 1 {
 		// default Config should only have default-scheduler configuration.
-		return v1beta2.PluginSet{}, xerrors.Errorf("get default scheduler configuration: %w", err)
+		return v1beta3.PluginSet{}, xerrors.Errorf("get default scheduler configuration: %w", err)
 	}
 	return defaultConfig.Profiles[0].Plugins.Score, nil
 }
 
-func OutOfTreeScorePlugins() []v1beta2.Plugin {
-	return []v1beta2.Plugin{
+func OutOfTreeScorePlugins() []v1beta3.Plugin {
+	return []v1beta3.Plugin{
 		// Note: add your score plugins here.
 	}
 }

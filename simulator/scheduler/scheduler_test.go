@@ -8,7 +8,7 @@ import (
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	v1beta2config "k8s.io/kube-scheduler/config/v1beta2"
+	v1beta3config "k8s.io/kube-scheduler/config/v1beta3"
 	"k8s.io/kubernetes/pkg/scheduler/apis/config"
 	"k8s.io/kubernetes/pkg/scheduler/apis/config/scheme"
 
@@ -27,7 +27,7 @@ func Test_convertConfigurationForSimulator(t *testing.T) {
 	var hardPodAffinityWeight int32 = 2
 
 	type args struct {
-		versioned *v1beta2config.KubeSchedulerConfiguration
+		versioned *v1beta3config.KubeSchedulerConfiguration
 	}
 	tests := []struct {
 		name    string
@@ -38,7 +38,7 @@ func Test_convertConfigurationForSimulator(t *testing.T) {
 		{
 			name: "success with empty-configuration",
 			args: args{
-				versioned: &v1beta2config.KubeSchedulerConfiguration{},
+				versioned: &v1beta3config.KubeSchedulerConfiguration{},
 			},
 			want: func() *config.KubeSchedulerConfiguration {
 				cfg := configGeneratedFromDefault()
@@ -48,11 +48,11 @@ func Test_convertConfigurationForSimulator(t *testing.T) {
 		{
 			name: "success with no-disabled plugin",
 			args: args{
-				versioned: &v1beta2config.KubeSchedulerConfiguration{
-					Profiles: []v1beta2config.KubeSchedulerProfile{
+				versioned: &v1beta3config.KubeSchedulerConfiguration{
+					Profiles: []v1beta3config.KubeSchedulerProfile{
 						{
 							SchedulerName: &defaultschedulername,
-							Plugins:       &v1beta2config.Plugins{},
+							Plugins:       &v1beta3config.Plugins{},
 						},
 					},
 				},
@@ -65,7 +65,7 @@ func Test_convertConfigurationForSimulator(t *testing.T) {
 		{
 			name: "success with empty Profiles",
 			args: args{
-				versioned: &v1beta2config.KubeSchedulerConfiguration{},
+				versioned: &v1beta3config.KubeSchedulerConfiguration{},
 			},
 			want: func() *config.KubeSchedulerConfiguration {
 				cfg := configGeneratedFromDefault()
@@ -75,12 +75,12 @@ func Test_convertConfigurationForSimulator(t *testing.T) {
 		{
 			name: "changes of field other than Profiles does not affects result",
 			args: args{
-				versioned: &v1beta2config.KubeSchedulerConfiguration{
+				versioned: &v1beta3config.KubeSchedulerConfiguration{
 					Parallelism: &nondefaultParallelism,
-					Profiles: []v1beta2config.KubeSchedulerProfile{
+					Profiles: []v1beta3config.KubeSchedulerProfile{
 						{
 							SchedulerName: &defaultschedulername,
-							Plugins:       &v1beta2config.Plugins{},
+							Plugins:       &v1beta3config.Plugins{},
 						},
 					},
 				},
@@ -93,12 +93,12 @@ func Test_convertConfigurationForSimulator(t *testing.T) {
 		{
 			name: "changes of field other than Profiles.Plugins does not affects result",
 			args: args{
-				versioned: &v1beta2config.KubeSchedulerConfiguration{
+				versioned: &v1beta3config.KubeSchedulerConfiguration{
 					Parallelism: &nondefaultParallelism,
-					Profiles: []v1beta2config.KubeSchedulerProfile{
+					Profiles: []v1beta3config.KubeSchedulerProfile{
 						{
 							SchedulerName: &defaultschedulername,
-							Plugins:       &v1beta2config.Plugins{},
+							Plugins:       &v1beta3config.Plugins{},
 							PluginConfig:  nil,
 						},
 					},
@@ -112,17 +112,17 @@ func Test_convertConfigurationForSimulator(t *testing.T) {
 		{
 			name: "success with multiple profiles",
 			args: args{
-				versioned: &v1beta2config.KubeSchedulerConfiguration{
+				versioned: &v1beta3config.KubeSchedulerConfiguration{
 					Parallelism: &nondefaultParallelism,
-					Profiles: []v1beta2config.KubeSchedulerProfile{
+					Profiles: []v1beta3config.KubeSchedulerProfile{
 						{
 							SchedulerName: &defaultschedulername,
 						},
 						{
 							SchedulerName: &nondefaultschedulername,
-							Plugins: &v1beta2config.Plugins{
-								Score: v1beta2config.PluginSet{
-									Disabled: []v1beta2config.Plugin{
+							Plugins: &v1beta3config.Plugins{
+								Score: v1beta3config.PluginSet{
+									Disabled: []v1beta3config.Plugin{
 										{
 											Name: "ImageLocality",
 										},
@@ -154,16 +154,16 @@ func Test_convertConfigurationForSimulator(t *testing.T) {
 		{
 			name: "success with multiple profiles and custom-pluginconfig",
 			args: args{
-				versioned: &v1beta2config.KubeSchedulerConfiguration{
+				versioned: &v1beta3config.KubeSchedulerConfiguration{
 					Parallelism: &nondefaultParallelism,
-					Profiles: []v1beta2config.KubeSchedulerProfile{
+					Profiles: []v1beta3config.KubeSchedulerProfile{
 						{
 							SchedulerName: &defaultschedulername,
-							PluginConfig: []v1beta2config.PluginConfig{
+							PluginConfig: []v1beta3config.PluginConfig{
 								{
 									Name: "DefaultPreemption",
 									Args: runtime.RawExtension{
-										Object: &v1beta2config.DefaultPreemptionArgs{
+										Object: &v1beta3config.DefaultPreemptionArgs{
 											TypeMeta: metav1.TypeMeta{
 												Kind:       "DefaultPreemptionArgs",
 												APIVersion: "kubescheduler.config.k8s.io/v1beta2",
@@ -177,11 +177,11 @@ func Test_convertConfigurationForSimulator(t *testing.T) {
 						},
 						{
 							SchedulerName: &nondefaultschedulername,
-							PluginConfig: []v1beta2config.PluginConfig{
+							PluginConfig: []v1beta3config.PluginConfig{
 								{
 									Name: "InterPodAffinity",
 									Args: runtime.RawExtension{
-										Object: &v1beta2config.InterPodAffinityArgs{
+										Object: &v1beta3config.InterPodAffinityArgs{
 											TypeMeta: metav1.TypeMeta{
 												Kind:       "InterPodAffinityArgs",
 												APIVersion: "kubescheduler.config.k8s.io/v1beta2",
@@ -237,14 +237,14 @@ func Test_convertConfigurationForSimulator(t *testing.T) {
 		{
 			name: "success with some plugin disabled",
 			args: args{
-				versioned: &v1beta2config.KubeSchedulerConfiguration{
+				versioned: &v1beta3config.KubeSchedulerConfiguration{
 					Parallelism: &nondefaultParallelism,
-					Profiles: []v1beta2config.KubeSchedulerProfile{
+					Profiles: []v1beta3config.KubeSchedulerProfile{
 						{
 							SchedulerName: &defaultschedulername,
-							Plugins: &v1beta2config.Plugins{
-								Score: v1beta2config.PluginSet{
-									Disabled: []v1beta2config.Plugin{
+							Plugins: &v1beta3config.Plugins{
+								Score: v1beta3config.PluginSet{
+									Disabled: []v1beta3config.Plugin{
 										{
 											Name: "ImageLocality",
 										},
@@ -304,7 +304,7 @@ func configGeneratedFromDefault() config.KubeSchedulerConfiguration {
 	var weight2 int32 = 2
 	versioned, _ := schedConfig.DefaultSchedulerConfig()
 	cfg := versioned.DeepCopy()
-	cfg.Profiles[0].Plugins.Filter.Enabled = []v1beta2config.Plugin{
+	cfg.Profiles[0].Plugins.Filter.Enabled = []v1beta3config.Plugin{
 		{Name: "NodeUnschedulableWrapped"},
 		{Name: "NodeNameWrapped"},
 		{Name: "TaintTolerationWrapped"},
@@ -321,7 +321,7 @@ func configGeneratedFromDefault() config.KubeSchedulerConfiguration {
 		{Name: "PodTopologySpreadWrapped"},
 		{Name: "InterPodAffinityWrapped"},
 	}
-	cfg.Profiles[0].Plugins.Score.Enabled = []v1beta2config.Plugin{
+	cfg.Profiles[0].Plugins.Score.Enabled = []v1beta3config.Plugin{
 		{Name: "NodeResourcesBalancedAllocationWrapped", Weight: &weight1},
 		{Name: "ImageLocalityWrapped", Weight: &weight1},
 		{Name: "InterPodAffinityWrapped", Weight: &weight1},
@@ -335,28 +335,28 @@ func configGeneratedFromDefault() config.KubeSchedulerConfiguration {
 		pcMap[c.Name] = c.Args
 	}
 
-	var newpc []v1beta2config.PluginConfig
-	newpc = append(newpc, v1beta2config.PluginConfig{
+	var newpc []v1beta3config.PluginConfig
+	newpc = append(newpc, v1beta3config.PluginConfig{
 		Name: "NodeResourcesBalancedAllocationWrapped",
 		Args: pcMap["NodeResourcesBalancedAllocation"],
 	})
-	newpc = append(newpc, v1beta2config.PluginConfig{
+	newpc = append(newpc, v1beta3config.PluginConfig{
 		Name: "InterPodAffinityWrapped",
 		Args: pcMap["InterPodAffinity"],
 	})
-	newpc = append(newpc, v1beta2config.PluginConfig{
+	newpc = append(newpc, v1beta3config.PluginConfig{
 		Name: "NodeResourcesFitWrapped",
 		Args: pcMap["NodeResourcesFit"],
 	})
-	newpc = append(newpc, v1beta2config.PluginConfig{
+	newpc = append(newpc, v1beta3config.PluginConfig{
 		Name: "NodeAffinityWrapped",
 		Args: pcMap["NodeAffinity"],
 	})
-	newpc = append(newpc, v1beta2config.PluginConfig{
+	newpc = append(newpc, v1beta3config.PluginConfig{
 		Name: "PodTopologySpreadWrapped",
 		Args: pcMap["PodTopologySpread"],
 	})
-	newpc = append(newpc, v1beta2config.PluginConfig{
+	newpc = append(newpc, v1beta3config.PluginConfig{
 		Name: "VolumeBindingWrapped",
 		Args: pcMap["VolumeBinding"],
 	})
@@ -365,6 +365,6 @@ func configGeneratedFromDefault() config.KubeSchedulerConfiguration {
 
 	converted := config.KubeSchedulerConfiguration{}
 	scheme.Scheme.Convert(cfg, &converted, nil)
-	converted.SetGroupVersionKind(v1beta2config.SchemeGroupVersion.WithKind("KubeSchedulerConfiguration"))
+	converted.SetGroupVersionKind(v1beta3config.SchemeGroupVersion.WithKind("KubeSchedulerConfiguration"))
 	return converted
 }

@@ -18,7 +18,7 @@ import (
 	schedulingcfgv1 "k8s.io/client-go/applyconfigurations/scheduling/v1"
 	confstoragev1 "k8s.io/client-go/applyconfigurations/storage/v1"
 	"k8s.io/client-go/kubernetes/fake"
-	v1beta2config "k8s.io/kube-scheduler/config/v1beta2"
+	v1beta3config "k8s.io/kube-scheduler/config/v1beta3"
 
 	"sigs.k8s.io/kube-scheduler-simulator/simulator/export/mock_export"
 	schedulerCfg "sigs.k8s.io/kube-scheduler-simulator/simulator/scheduler/config"
@@ -48,7 +48,7 @@ func TestService_Export(t *testing.T) {
 				pvcs.EXPECT().List(gomock.Any(), gomock.Any()).Return(&corev1.PersistentVolumeClaimList{Items: []corev1.PersistentVolumeClaim{}}, nil)
 				storageClasss.EXPECT().List(gomock.Any()).Return(&storagev1.StorageClassList{Items: []storagev1.StorageClass{}}, nil)
 				pcs.EXPECT().List(gomock.Any()).Return(&schedulingv1.PriorityClassList{Items: []schedulingv1.PriorityClass{}}, nil)
-				schedulers.EXPECT().GetSchedulerConfig().Return(&v1beta2config.KubeSchedulerConfiguration{})
+				schedulers.EXPECT().GetSchedulerConfig().Return(&v1beta3config.KubeSchedulerConfiguration{})
 			},
 			prepareFakeClientSetFn: func() *fake.Clientset {
 				c := fake.NewSimpleClientset()
@@ -62,7 +62,7 @@ func TestService_Export(t *testing.T) {
 				Pvcs:            []corev1.PersistentVolumeClaim{},
 				StorageClasses:  []storagev1.StorageClass{},
 				PriorityClasses: []schedulingv1.PriorityClass{},
-				SchedulerConfig: &v1beta2config.KubeSchedulerConfiguration{},
+				SchedulerConfig: &v1beta3config.KubeSchedulerConfiguration{},
 			},
 			wantErr: false,
 		},
@@ -75,7 +75,7 @@ func TestService_Export(t *testing.T) {
 				pvcs.EXPECT().List(gomock.Any(), gomock.Any()).Return(&corev1.PersistentVolumeClaimList{Items: []corev1.PersistentVolumeClaim{}}, nil)
 				storageClasss.EXPECT().List(gomock.Any()).Return(&storagev1.StorageClassList{Items: []storagev1.StorageClass{}}, nil)
 				pcs.EXPECT().List(gomock.Any()).Return(&schedulingv1.PriorityClassList{Items: []schedulingv1.PriorityClass{}}, nil)
-				schedulers.EXPECT().GetSchedulerConfig().Return(&v1beta2config.KubeSchedulerConfiguration{})
+				schedulers.EXPECT().GetSchedulerConfig().Return(&v1beta3config.KubeSchedulerConfiguration{})
 			},
 			prepareFakeClientSetFn: func() *fake.Clientset {
 				c := fake.NewSimpleClientset()
@@ -93,7 +93,7 @@ func TestService_Export(t *testing.T) {
 				pvcs.EXPECT().List(gomock.Any(), gomock.Any()).Return(&corev1.PersistentVolumeClaimList{Items: []corev1.PersistentVolumeClaim{}}, nil)
 				storageClasss.EXPECT().List(gomock.Any()).Return(&storagev1.StorageClassList{Items: []storagev1.StorageClass{}}, nil)
 				pcs.EXPECT().List(gomock.Any()).Return(&schedulingv1.PriorityClassList{Items: []schedulingv1.PriorityClass{}}, nil)
-				schedulers.EXPECT().GetSchedulerConfig().Return(&v1beta2config.KubeSchedulerConfiguration{})
+				schedulers.EXPECT().GetSchedulerConfig().Return(&v1beta3config.KubeSchedulerConfiguration{})
 			},
 			prepareFakeClientSetFn: func() *fake.Clientset {
 				c := fake.NewSimpleClientset()
@@ -111,7 +111,7 @@ func TestService_Export(t *testing.T) {
 				pvcs.EXPECT().List(gomock.Any(), gomock.Any()).Return(&corev1.PersistentVolumeClaimList{Items: []corev1.PersistentVolumeClaim{}}, nil)
 				storageClasss.EXPECT().List(gomock.Any()).Return(&storagev1.StorageClassList{Items: []storagev1.StorageClass{}}, nil)
 				pcs.EXPECT().List(gomock.Any()).Return(&schedulingv1.PriorityClassList{Items: []schedulingv1.PriorityClass{}}, nil)
-				schedulers.EXPECT().GetSchedulerConfig().Return(&v1beta2config.KubeSchedulerConfiguration{})
+				schedulers.EXPECT().GetSchedulerConfig().Return(&v1beta3config.KubeSchedulerConfiguration{})
 			},
 			prepareFakeClientSetFn: func() *fake.Clientset {
 				c := fake.NewSimpleClientset()
@@ -129,7 +129,7 @@ func TestService_Export(t *testing.T) {
 				pvcs.EXPECT().List(gomock.Any(), gomock.Any()).Return(nil, xerrors.Errorf("list PersistentVolumeClaims"))
 				storageClasss.EXPECT().List(gomock.Any()).Return(&storagev1.StorageClassList{Items: []storagev1.StorageClass{}}, nil)
 				pcs.EXPECT().List(gomock.Any()).Return(&schedulingv1.PriorityClassList{Items: []schedulingv1.PriorityClass{}}, nil)
-				schedulers.EXPECT().GetSchedulerConfig().Return(&v1beta2config.KubeSchedulerConfiguration{})
+				schedulers.EXPECT().GetSchedulerConfig().Return(&v1beta3config.KubeSchedulerConfiguration{})
 			},
 			prepareFakeClientSetFn: func() *fake.Clientset {
 				c := fake.NewSimpleClientset()
@@ -147,7 +147,7 @@ func TestService_Export(t *testing.T) {
 				pvcs.EXPECT().List(gomock.Any(), gomock.Any()).Return(&corev1.PersistentVolumeClaimList{Items: []corev1.PersistentVolumeClaim{}}, nil)
 				storageClasss.EXPECT().List(gomock.Any()).Return(nil, xerrors.Errorf("list storageClasses"))
 				pcs.EXPECT().List(gomock.Any()).Return(&schedulingv1.PriorityClassList{Items: []schedulingv1.PriorityClass{}}, nil)
-				schedulers.EXPECT().GetSchedulerConfig().Return(&v1beta2config.KubeSchedulerConfiguration{})
+				schedulers.EXPECT().GetSchedulerConfig().Return(&v1beta3config.KubeSchedulerConfiguration{})
 			},
 			prepareFakeClientSetFn: func() *fake.Clientset {
 				c := fake.NewSimpleClientset()
@@ -165,7 +165,7 @@ func TestService_Export(t *testing.T) {
 				pvcs.EXPECT().List(gomock.Any(), gomock.Any()).Return(&corev1.PersistentVolumeClaimList{Items: []corev1.PersistentVolumeClaim{}}, nil)
 				storageClasss.EXPECT().List(gomock.Any()).Return(&storagev1.StorageClassList{Items: []storagev1.StorageClass{}}, nil)
 				pcs.EXPECT().List(gomock.Any()).Return(nil, xerrors.Errorf("list priorityClasses"))
-				schedulers.EXPECT().GetSchedulerConfig().Return(&v1beta2config.KubeSchedulerConfiguration{})
+				schedulers.EXPECT().GetSchedulerConfig().Return(&v1beta3config.KubeSchedulerConfiguration{})
 			},
 			prepareFakeClientSetFn: func() *fake.Clientset {
 				c := fake.NewSimpleClientset()
@@ -192,7 +192,7 @@ func TestService_Export(t *testing.T) {
 				pvcs.EXPECT().List(gomock.Any(), gomock.Any()).Return(&corev1.PersistentVolumeClaimList{Items: []corev1.PersistentVolumeClaim{}}, nil)
 				storageClasss.EXPECT().List(gomock.Any()).Return(&storagev1.StorageClassList{Items: []storagev1.StorageClass{}}, nil)
 				pcs.EXPECT().List(gomock.Any()).Return(&schedulingv1.PriorityClassList{Items: []schedulingv1.PriorityClass{}}, nil)
-				schedulers.EXPECT().GetSchedulerConfig().Return(&v1beta2config.KubeSchedulerConfiguration{})
+				schedulers.EXPECT().GetSchedulerConfig().Return(&v1beta3config.KubeSchedulerConfiguration{})
 			},
 			prepareFakeClientSetFn: func() *fake.Clientset {
 				c := fake.NewSimpleClientset()
@@ -215,7 +215,7 @@ func TestService_Export(t *testing.T) {
 				Pvcs:            []corev1.PersistentVolumeClaim{},
 				StorageClasses:  []storagev1.StorageClass{},
 				PriorityClasses: []schedulingv1.PriorityClass{},
-				SchedulerConfig: &v1beta2config.KubeSchedulerConfiguration{},
+				SchedulerConfig: &v1beta3config.KubeSchedulerConfiguration{},
 			},
 		},
 		{
@@ -246,7 +246,7 @@ func TestService_Export(t *testing.T) {
 				}}, nil)
 				storageClasss.EXPECT().List(gomock.Any()).Return(&storagev1.StorageClassList{Items: []storagev1.StorageClass{}}, nil)
 				pcs.EXPECT().List(gomock.Any()).Return(&schedulingv1.PriorityClassList{Items: []schedulingv1.PriorityClass{}}, nil)
-				schedulers.EXPECT().GetSchedulerConfig().Return(&v1beta2config.KubeSchedulerConfiguration{})
+				schedulers.EXPECT().GetSchedulerConfig().Return(&v1beta3config.KubeSchedulerConfiguration{})
 			},
 			prepareFakeClientSetFn: func() *fake.Clientset {
 				c := fake.NewSimpleClientset()
@@ -279,7 +279,7 @@ func TestService_Export(t *testing.T) {
 				},
 				StorageClasses:  []storagev1.StorageClass{},
 				PriorityClasses: []schedulingv1.PriorityClass{},
-				SchedulerConfig: &v1beta2config.KubeSchedulerConfiguration{},
+				SchedulerConfig: &v1beta3config.KubeSchedulerConfiguration{},
 			},
 			wantErr: false,
 		},
@@ -329,7 +329,7 @@ func TestService_Export_IgnoreErrOption(t *testing.T) {
 				pvcs.EXPECT().List(gomock.Any(), gomock.Any()).Return(&corev1.PersistentVolumeClaimList{Items: []corev1.PersistentVolumeClaim{}}, nil)
 				storageClasss.EXPECT().List(gomock.Any()).Return(&storagev1.StorageClassList{Items: []storagev1.StorageClass{}}, nil)
 				pcs.EXPECT().List(gomock.Any()).Return(&schedulingv1.PriorityClassList{Items: []schedulingv1.PriorityClass{}}, nil)
-				schedulers.EXPECT().GetSchedulerConfig().Return(&v1beta2config.KubeSchedulerConfiguration{})
+				schedulers.EXPECT().GetSchedulerConfig().Return(&v1beta3config.KubeSchedulerConfiguration{})
 			},
 			prepareFakeClientSetFn: func() *fake.Clientset {
 				c := fake.NewSimpleClientset()
@@ -343,7 +343,7 @@ func TestService_Export_IgnoreErrOption(t *testing.T) {
 				Pvcs:            []corev1.PersistentVolumeClaim{},
 				StorageClasses:  []storagev1.StorageClass{},
 				PriorityClasses: []schedulingv1.PriorityClass{},
-				SchedulerConfig: &v1beta2config.KubeSchedulerConfiguration{},
+				SchedulerConfig: &v1beta3config.KubeSchedulerConfiguration{},
 			},
 			wantErr: false,
 		},
@@ -356,7 +356,7 @@ func TestService_Export_IgnoreErrOption(t *testing.T) {
 				pvcs.EXPECT().List(gomock.Any(), gomock.Any()).Return(&corev1.PersistentVolumeClaimList{Items: []corev1.PersistentVolumeClaim{}}, nil)
 				storageClasss.EXPECT().List(gomock.Any()).Return(&storagev1.StorageClassList{Items: []storagev1.StorageClass{}}, nil)
 				pcs.EXPECT().List(gomock.Any()).Return(&schedulingv1.PriorityClassList{Items: []schedulingv1.PriorityClass{}}, nil)
-				schedulers.EXPECT().GetSchedulerConfig().Return(&v1beta2config.KubeSchedulerConfiguration{})
+				schedulers.EXPECT().GetSchedulerConfig().Return(&v1beta3config.KubeSchedulerConfiguration{})
 			},
 			prepareFakeClientSetFn: func() *fake.Clientset {
 				c := fake.NewSimpleClientset()
@@ -369,7 +369,7 @@ func TestService_Export_IgnoreErrOption(t *testing.T) {
 				Pvcs:            []corev1.PersistentVolumeClaim{},
 				StorageClasses:  []storagev1.StorageClass{},
 				PriorityClasses: []schedulingv1.PriorityClass{},
-				SchedulerConfig: &v1beta2config.KubeSchedulerConfiguration{},
+				SchedulerConfig: &v1beta3config.KubeSchedulerConfiguration{},
 			},
 			wantErr: false,
 		},
@@ -382,7 +382,7 @@ func TestService_Export_IgnoreErrOption(t *testing.T) {
 				pvcs.EXPECT().List(gomock.Any(), gomock.Any()).Return(&corev1.PersistentVolumeClaimList{Items: []corev1.PersistentVolumeClaim{}}, nil)
 				storageClasss.EXPECT().List(gomock.Any()).Return(&storagev1.StorageClassList{Items: []storagev1.StorageClass{}}, nil)
 				pcs.EXPECT().List(gomock.Any()).Return(&schedulingv1.PriorityClassList{Items: []schedulingv1.PriorityClass{}}, nil)
-				schedulers.EXPECT().GetSchedulerConfig().Return(&v1beta2config.KubeSchedulerConfiguration{})
+				schedulers.EXPECT().GetSchedulerConfig().Return(&v1beta3config.KubeSchedulerConfiguration{})
 			},
 			prepareFakeClientSetFn: func() *fake.Clientset {
 				c := fake.NewSimpleClientset()
@@ -395,7 +395,7 @@ func TestService_Export_IgnoreErrOption(t *testing.T) {
 				Pvcs:            []corev1.PersistentVolumeClaim{},
 				StorageClasses:  []storagev1.StorageClass{},
 				PriorityClasses: []schedulingv1.PriorityClass{},
-				SchedulerConfig: &v1beta2config.KubeSchedulerConfiguration{},
+				SchedulerConfig: &v1beta3config.KubeSchedulerConfiguration{},
 			},
 			wantErr: false,
 		},
@@ -408,7 +408,7 @@ func TestService_Export_IgnoreErrOption(t *testing.T) {
 				pvcs.EXPECT().List(gomock.Any(), gomock.Any()).Return(&corev1.PersistentVolumeClaimList{Items: []corev1.PersistentVolumeClaim{}}, nil)
 				storageClasss.EXPECT().List(gomock.Any()).Return(&storagev1.StorageClassList{Items: []storagev1.StorageClass{}}, nil)
 				pcs.EXPECT().List(gomock.Any()).Return(&schedulingv1.PriorityClassList{Items: []schedulingv1.PriorityClass{}}, nil)
-				schedulers.EXPECT().GetSchedulerConfig().Return(&v1beta2config.KubeSchedulerConfiguration{})
+				schedulers.EXPECT().GetSchedulerConfig().Return(&v1beta3config.KubeSchedulerConfiguration{})
 			},
 			prepareFakeClientSetFn: func() *fake.Clientset {
 				c := fake.NewSimpleClientset()
@@ -421,7 +421,7 @@ func TestService_Export_IgnoreErrOption(t *testing.T) {
 				Pvcs:            []corev1.PersistentVolumeClaim{},
 				StorageClasses:  []storagev1.StorageClass{},
 				PriorityClasses: []schedulingv1.PriorityClass{},
-				SchedulerConfig: &v1beta2config.KubeSchedulerConfiguration{},
+				SchedulerConfig: &v1beta3config.KubeSchedulerConfiguration{},
 			},
 			wantErr: false,
 		},
@@ -434,7 +434,7 @@ func TestService_Export_IgnoreErrOption(t *testing.T) {
 				pvcs.EXPECT().List(gomock.Any(), gomock.Any()).Return(nil, xerrors.Errorf("list PersistentVolumeClaims"))
 				storageClasss.EXPECT().List(gomock.Any()).Return(&storagev1.StorageClassList{Items: []storagev1.StorageClass{}}, nil)
 				pcs.EXPECT().List(gomock.Any()).Return(&schedulingv1.PriorityClassList{Items: []schedulingv1.PriorityClass{}}, nil)
-				schedulers.EXPECT().GetSchedulerConfig().Return(&v1beta2config.KubeSchedulerConfiguration{})
+				schedulers.EXPECT().GetSchedulerConfig().Return(&v1beta3config.KubeSchedulerConfiguration{})
 			},
 			prepareFakeClientSetFn: func() *fake.Clientset {
 				c := fake.NewSimpleClientset()
@@ -447,7 +447,7 @@ func TestService_Export_IgnoreErrOption(t *testing.T) {
 				Pvcs:            []corev1.PersistentVolumeClaim{},
 				StorageClasses:  []storagev1.StorageClass{},
 				PriorityClasses: []schedulingv1.PriorityClass{},
-				SchedulerConfig: &v1beta2config.KubeSchedulerConfiguration{},
+				SchedulerConfig: &v1beta3config.KubeSchedulerConfiguration{},
 			},
 			wantErr: false,
 		},
@@ -460,7 +460,7 @@ func TestService_Export_IgnoreErrOption(t *testing.T) {
 				pvcs.EXPECT().List(gomock.Any(), gomock.Any()).Return(&corev1.PersistentVolumeClaimList{Items: []corev1.PersistentVolumeClaim{}}, nil)
 				storageClasss.EXPECT().List(gomock.Any()).Return(nil, xerrors.Errorf("list storageClasses"))
 				pcs.EXPECT().List(gomock.Any()).Return(&schedulingv1.PriorityClassList{Items: []schedulingv1.PriorityClass{}}, nil)
-				schedulers.EXPECT().GetSchedulerConfig().Return(&v1beta2config.KubeSchedulerConfiguration{})
+				schedulers.EXPECT().GetSchedulerConfig().Return(&v1beta3config.KubeSchedulerConfiguration{})
 			},
 			prepareFakeClientSetFn: func() *fake.Clientset {
 				c := fake.NewSimpleClientset()
@@ -473,7 +473,7 @@ func TestService_Export_IgnoreErrOption(t *testing.T) {
 				Pvcs:            []corev1.PersistentVolumeClaim{},
 				StorageClasses:  []storagev1.StorageClass{},
 				PriorityClasses: []schedulingv1.PriorityClass{},
-				SchedulerConfig: &v1beta2config.KubeSchedulerConfiguration{},
+				SchedulerConfig: &v1beta3config.KubeSchedulerConfiguration{},
 			},
 			wantErr: false,
 		},
@@ -486,7 +486,7 @@ func TestService_Export_IgnoreErrOption(t *testing.T) {
 				pvcs.EXPECT().List(gomock.Any(), gomock.Any()).Return(&corev1.PersistentVolumeClaimList{Items: []corev1.PersistentVolumeClaim{}}, nil)
 				storageClasss.EXPECT().List(gomock.Any()).Return(&storagev1.StorageClassList{Items: []storagev1.StorageClass{}}, nil)
 				pcs.EXPECT().List(gomock.Any()).Return(nil, xerrors.Errorf("list priorityClasses"))
-				schedulers.EXPECT().GetSchedulerConfig().Return(&v1beta2config.KubeSchedulerConfiguration{})
+				schedulers.EXPECT().GetSchedulerConfig().Return(&v1beta3config.KubeSchedulerConfiguration{})
 			},
 			prepareFakeClientSetFn: func() *fake.Clientset {
 				c := fake.NewSimpleClientset()
@@ -499,7 +499,7 @@ func TestService_Export_IgnoreErrOption(t *testing.T) {
 				Pvcs:            []corev1.PersistentVolumeClaim{},
 				StorageClasses:  []storagev1.StorageClass{},
 				PriorityClasses: []schedulingv1.PriorityClass{},
-				SchedulerConfig: &v1beta2config.KubeSchedulerConfiguration{},
+				SchedulerConfig: &v1beta3config.KubeSchedulerConfiguration{},
 			},
 			wantErr: false,
 		},
@@ -1705,7 +1705,7 @@ func TestFunction_listPcs(t *testing.T) {
 					Pvcs:            []corev1.PersistentVolumeClaim{},
 					StorageClasses:  []storagev1.StorageClass{},
 					PriorityClasses: _pcs,
-					SchedulerConfig: &v1beta2config.KubeSchedulerConfiguration{},
+					SchedulerConfig: &v1beta3config.KubeSchedulerConfiguration{},
 				}
 			},
 			wantErr: false,
@@ -1737,7 +1737,7 @@ func TestFunction_listPcs(t *testing.T) {
 				Pvcs:            []corev1.PersistentVolumeClaim{},
 				StorageClasses:  []storagev1.StorageClass{},
 				PriorityClasses: []schedulingv1.PriorityClass{},
-				SchedulerConfig: &v1beta2config.KubeSchedulerConfiguration{},
+				SchedulerConfig: &v1beta3config.KubeSchedulerConfiguration{},
 			}
 
 			err := s.listPcs(ctx, resources, errgrp, options{})

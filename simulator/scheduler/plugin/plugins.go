@@ -9,7 +9,7 @@ import (
 	"k8s.io/client-go/informers"
 	clientset "k8s.io/client-go/kubernetes"
 	"k8s.io/klog/v2"
-	"k8s.io/kube-scheduler/config/v1beta2"
+	"k8s.io/kube-scheduler/config/v1beta3"
 	"k8s.io/kubernetes/pkg/scheduler/framework"
 	schedulerRuntime "k8s.io/kubernetes/pkg/scheduler/framework/runtime"
 
@@ -79,15 +79,15 @@ func NewRegistry(informerFactory informers.SharedInformerFactory, client clients
 	return ret, nil
 }
 
-// NewPluginConfig converts []v1beta2.PluginConfig for simulator.
+// NewPluginConfig converts []v1beta3.PluginConfig for simulator.
 // Passed []v1beta.PluginConfig overrides default config values.
 //
 // NewPluginConfig expects that either PluginConfig.Args.Raw or PluginConfig.Args.Object has data
-// in the passed v1beta2.PluginConfig parameter.
+// in the passed v1beta3.PluginConfig parameter.
 // If data exists in both PluginConfig.Args.Raw and PluginConfig.Args.Object, PluginConfig.Args.Raw would be ignored
 // since PluginConfig.Args.Object has higher priority.
 //nolint:funlen,cyclop
-func NewPluginConfig(pc []v1beta2.PluginConfig) ([]v1beta2.PluginConfig, error) {
+func NewPluginConfig(pc []v1beta3.PluginConfig) ([]v1beta3.PluginConfig, error) {
 	defaultcfg, err := config.DefaultSchedulerConfig()
 	if err != nil || len(defaultcfg.Profiles) != 1 {
 		return nil, xerrors.Errorf("get default scheduler configuration: %w", err)
@@ -114,7 +114,7 @@ func NewPluginConfig(pc []v1beta2.PluginConfig) ([]v1beta2.PluginConfig, error) 
 			continue
 		}
 
-		// v1beta2.PluginConfig may have data in pc[i].Args.Raw as []byte.
+		// v1beta3.PluginConfig may have data in pc[i].Args.Raw as []byte.
 		// We have to encoding it in this case.
 		if len(pc[i].Args.Raw) != 0 {
 			// override default configuration
@@ -132,10 +132,10 @@ func NewPluginConfig(pc []v1beta2.PluginConfig) ([]v1beta2.PluginConfig, error) 
 		pluginConfig[name] = ret
 	}
 
-	ret := make([]v1beta2.PluginConfig, 0, len(pluginConfig))
+	ret := make([]v1beta3.PluginConfig, 0, len(pluginConfig))
 	for name, arg := range pluginConfig {
 		// add plugin configs for default plugins.
-		ret = append(ret, v1beta2.PluginConfig{
+		ret = append(ret, v1beta3.PluginConfig{
 			Name: name,
 			Args: *arg,
 		})
@@ -153,7 +153,7 @@ func NewPluginConfig(pc []v1beta2.PluginConfig) ([]v1beta2.PluginConfig, error) 
 			continue
 		}
 
-		ret = append(ret, v1beta2.PluginConfig{
+		ret = append(ret, v1beta3.PluginConfig{
 			Name: pluginName(name),
 			Args: *pc,
 		})
@@ -165,9 +165,9 @@ func NewPluginConfig(pc []v1beta2.PluginConfig) ([]v1beta2.PluginConfig, error) 
 	return ret, nil
 }
 
-// ConvertForSimulator convert v1beta2.Plugins for simulator.
+// ConvertForSimulator convert v1beta3.Plugins for simulator.
 // It ignores non-default plugin.
-func ConvertForSimulator(pls *v1beta2.Plugins) (*v1beta2.Plugins, error) {
+func ConvertForSimulator(pls *v1beta3.Plugins) (*v1beta3.Plugins, error) {
 	newpls := pls.DeepCopy()
 
 	defaultScorePls, err := config.InTreeScorePluginSet()
@@ -176,14 +176,14 @@ func ConvertForSimulator(pls *v1beta2.Plugins) (*v1beta2.Plugins, error) {
 	}
 	merged := mergePluginSet(defaultScorePls, pls.Score)
 
-	retscorepls := make([]v1beta2.Plugin, 0, len(merged.Enabled))
+	retscorepls := make([]v1beta3.Plugin, 0, len(merged.Enabled))
 	for _, p := range merged.Enabled {
-		retscorepls = append(retscorepls, v1beta2.Plugin{Name: pluginName(p.Name), Weight: p.Weight})
+		retscorepls = append(retscorepls, v1beta3.Plugin{Name: pluginName(p.Name), Weight: p.Weight})
 	}
 	newpls.Score.Enabled = retscorepls
 
 	// disable default plugins whatever scheduler configuration value is
-	newpls.Score.Disabled = []v1beta2.Plugin{
+	newpls.Score.Disabled = []v1beta3.Plugin{
 		{
 			Name: "*",
 		},
@@ -195,14 +195,14 @@ func ConvertForSimulator(pls *v1beta2.Plugins) (*v1beta2.Plugins, error) {
 	}
 	merged = mergePluginSet(defaultFilterPls, pls.Filter)
 
-	retfilterpls := make([]v1beta2.Plugin, 0, len(merged.Enabled))
+	retfilterpls := make([]v1beta3.Plugin, 0, len(merged.Enabled))
 	for _, p := range merged.Enabled {
-		retfilterpls = append(retfilterpls, v1beta2.Plugin{Name: pluginName(p.Name), Weight: p.Weight})
+		retfilterpls = append(retfilterpls, v1beta3.Plugin{Name: pluginName(p.Name), Weight: p.Weight})
 	}
 	newpls.Filter.Enabled = retfilterpls
 
 	// disable default plugins whatever scheduler configuration value is
-	newpls.Filter.Disabled = []v1beta2.Plugin{
+	newpls.Filter.Disabled = []v1beta3.Plugin{
 		{
 			Name: "*",
 		},
@@ -212,11 +212,11 @@ func ConvertForSimulator(pls *v1beta2.Plugins) (*v1beta2.Plugins, error) {
 }
 
 // mergePluginsSet merges two plugin sets.
-// This function is copied from k8s.io/kubernetes/pkg/scheduler/apis/config/v1beta2/default_config.go.
-func mergePluginSet(inTreePluginSet, outOfTreePluginSet v1beta2.PluginSet) v1beta2.PluginSet {
+// This function is copied from k8s.io/kubernetes/pkg/scheduler/apis/config/v1beta3/default_config.go.
+func mergePluginSet(inTreePluginSet, outOfTreePluginSet v1beta3.PluginSet) v1beta3.PluginSet {
 	type pluginIndex struct {
 		index  int
-		plugin v1beta2.Plugin
+		plugin v1beta3.Plugin
 	}
 
 	disabledPlugins := sets.NewString()
@@ -229,7 +229,7 @@ func mergePluginSet(inTreePluginSet, outOfTreePluginSet v1beta2.PluginSet) v1bet
 	for index, enabledPlugin := range outOfTreePluginSet.Enabled {
 		enabledCustomPlugins[enabledPlugin.Name] = pluginIndex{index, enabledPlugin}
 	}
-	var enabledPlugins []v1beta2.Plugin
+	var enabledPlugins []v1beta3.Plugin
 	if !disabledPlugins.Has("*") {
 		for _, defaultEnabledPlugin := range inTreePluginSet.Enabled {
 			if disabledPlugins.Has(defaultEnabledPlugin.Name) {
@@ -254,11 +254,11 @@ func mergePluginSet(inTreePluginSet, outOfTreePluginSet v1beta2.PluginSet) v1bet
 			enabledPlugins = append(enabledPlugins, plugin)
 		}
 	}
-	return v1beta2.PluginSet{Enabled: enabledPlugins}
+	return v1beta3.PluginSet{Enabled: enabledPlugins}
 }
 
 // registeredFilterScorePlugins returns all registered score plugin and filter plugin.
-func registeredFilterScorePlugins() ([]v1beta2.Plugin, error) {
+func registeredFilterScorePlugins() ([]v1beta3.Plugin, error) {
 	registeredfilterpls, err := config.RegisteredFilterPlugins()
 	if err != nil {
 		return nil, xerrors.Errorf("get registered filter plugins: %w", err)

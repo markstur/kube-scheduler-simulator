@@ -8,7 +8,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	v1beta2 "k8s.io/kube-scheduler/config/v1beta2"
+	v1beta3 "k8s.io/kube-scheduler/config/v1beta3"
 )
 
 // MockSchedulerService is a mock of SchedulerService interface.
@@ -35,10 +35,10 @@ func (m *MockSchedulerService) EXPECT() *MockSchedulerServiceMockRecorder {
 }
 
 // GetSchedulerConfig mocks base method.
-func (m *MockSchedulerService) GetSchedulerConfig() *v1beta2.KubeSchedulerConfiguration {
+func (m *MockSchedulerService) GetSchedulerConfig() *v1beta3.KubeSchedulerConfiguration {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetSchedulerConfig")
-	ret0, _ := ret[0].(*v1beta2.KubeSchedulerConfiguration)
+	ret0, _ := ret[0].(*v1beta3.KubeSchedulerConfiguration)
 	return ret0
 }
 
@@ -49,7 +49,7 @@ func (mr *MockSchedulerServiceMockRecorder) GetSchedulerConfig() *gomock.Call {
 }
 
 // RestartScheduler mocks base method.
-func (m *MockSchedulerService) RestartScheduler(arg0 *v1beta2.KubeSchedulerConfiguration) error {
+func (m *MockSchedulerService) RestartScheduler(arg0 *v1beta3.KubeSchedulerConfiguration) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "RestartScheduler", arg0)
 	ret0, _ := ret[0].(error)

@@ -10,7 +10,7 @@ import (
 	configv1 "k8s.io/client-go/applyconfigurations/core/v1"
 	schedulingv1 "k8s.io/client-go/applyconfigurations/scheduling/v1"
 	storageconfigv1 "k8s.io/client-go/applyconfigurations/storage/v1"
-	"k8s.io/kube-scheduler/config/v1beta2"
+	"k8s.io/kube-scheduler/config/v1beta3"
 
 	"sigs.k8s.io/kube-scheduler-simulator/simulator/export"
 	"sigs.k8s.io/kube-scheduler-simulator/simulator/resourcewatcher"
@@ -64,9 +64,9 @@ type StorageClassService interface {
 
 // SchedulerService represents service for manage scheduler.
 type SchedulerService interface {
-	GetSchedulerConfig() *v1beta2.KubeSchedulerConfiguration
-	RestartScheduler(cfg *v1beta2.KubeSchedulerConfiguration) error
-	StartScheduler(cfg *v1beta2.KubeSchedulerConfiguration) error
+	GetSchedulerConfig() *v1beta3.KubeSchedulerConfiguration
+	RestartScheduler(cfg *v1beta3.KubeSchedulerConfiguration) error
+	StartScheduler(cfg *v1beta3.KubeSchedulerConfiguration) error
 	ResetScheduler() error
 	ShutdownScheduler()
 }
